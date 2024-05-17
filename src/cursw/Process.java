@@ -19,12 +19,12 @@ public class Process {
                         break;
                     }
                     synchronized (mutex) {
-                        //System.out.println("Демон: Состояние программы сейчас " + state.toString());
+                        //System.out.println("Р”РµРјРѕРЅ: РЎРѕСЃС‚РѕСЏРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹ СЃРµР№С‡Р°СЃ " + state.toString());
                         state = State.values()[new Random().nextInt(State.values().length)];
                         if (state.equals(State.RUNNING)) {
-                            System.out.println("Демон$~ Программе повезло и состояние осталось. Состояние: RUNNING");
+                            System.out.println("Р”РµРјРѕРЅ$~ РџСЂРѕРіСЂР°РјРјРµ РїРѕРІРµР·Р»Рѕ Рё СЃРѕСЃС‚РѕСЏРЅРёРµ РѕСЃС‚Р°Р»РѕСЃСЊ. РЎРѕСЃС‚РѕСЏРЅРёРµ: RUNNING");
                         } else {
-                            System.out.println("Демон$~ Я изменил состояние программы на: " + state.toString());
+                            System.out.println("Р”РµРјРѕРЅ$~ РЇ РёР·РјРµРЅРёР» СЃРѕСЃС‚РѕСЏРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹ РЅР°: " + state.toString());
                         }
                         mutex.notify();
                     }
@@ -32,7 +32,7 @@ public class Process {
             });
             daemon.setDaemon(true);
             daemon.start();
-            System.out.println("Абстрактная программа$~ я заработала и запустила демона!");
+            System.out.println("РђР±СЃС‚СЂР°РєС‚РЅР°СЏ РїСЂРѕРіСЂР°РјРјР°$~ СЏ Р·Р°СЂР°Р±РѕС‚Р°Р»Р° Рё Р·Р°РїСѓСЃС‚РёР»Р° РґРµРјРѕРЅР°!");
 
             while (!Thread.currentThread().isInterrupted()) {
                 someWork();
@@ -49,7 +49,7 @@ public class Process {
 
         @Override
         public void run() {
-            System.out.println("Супервизор$~ я встал!");
+            System.out.println("РЎСѓРїРµСЂРІРёР·РѕСЂ$~ СЏ РІСЃС‚Р°Р»!");
             abstractProgram.start();
             while (!abstractProgram.isInterrupted()) {
                 synchronized (mutex) {
@@ -61,7 +61,7 @@ public class Process {
                     switch (state) {
                         case FATAL_ERROR -> stopProgram();
                         case UNKNOWN, STOPPING -> runProgram();
-                        default -> System.out.println("Супервизор$~ Я ничего не сделал)");
+                        default -> System.out.println("РЎСѓРїРµСЂРІРёР·РѕСЂ$~ РЇ РЅРёС‡РµРіРѕ РЅРµ СЃРґРµР»Р°Р»)");
                     }
                 }
             }
@@ -69,12 +69,12 @@ public class Process {
 
         private void runProgram() {
             state = State.RUNNING;
-            System.out.println("Супервизор$~ Я перезапустил программу");
+            System.out.println("РЎСѓРїРµСЂРІРёР·РѕСЂ$~ РЇ РїРµСЂРµР·Р°РїСѓСЃС‚РёР» РїСЂРѕРіСЂР°РјРјСѓ");
         }
 
         private void stopProgram() {
             abstractProgram.interrupt();
-            System.out.println("Супервизор$~ Я остановил программу");
+            System.out.println("РЎСѓРїРµСЂРІРёР·РѕСЂ$~ РЇ РѕСЃС‚Р°РЅРѕРІРёР» РїСЂРѕРіСЂР°РјРјСѓ");
         }
     }
 
