@@ -4,14 +4,14 @@ import java.util.Random;
 
 public class Process {
 
-    private static State state = State.RUNNING;
+    private static State state = State.UNKNOWN;
     private static final Object mutex = new Object();
     private static final Thread abstractProgram = new Thread(new AbstractProgram());
 
     static class AbstractProgram implements Runnable {
-
         @Override
         public void run() {
+            System.out.println("Демон$~ Состояние демона перед запуском программы: " + state + ".");
             Thread daemon = new Thread(() -> {
                 while (true) {
                     Utils.pause(500, 5500);
@@ -19,12 +19,14 @@ public class Process {
                         break;
                     }
                     synchronized (mutex) {
-                        //System.out.println("Демон: Состояние программы сейчас " + state.toString());
-                        state = State.values()[new Random().nextInt(State.values().length)];
+                        do {
+                            state = State.values()[new Random().nextInt(State.values().length)];
+                        } while (state == State.UNKNOWN);
+
                         if (state.equals(State.RUNNING)) {
-                            System.out.println("Демон$~ Программе повезло и состояние осталось. Состояние: RUNNING");
+                            System.out.println("Демон$~ Программе повезло и состояние осталось. Состояние: RUNNING.");
                         } else {
-                            System.out.println("Демон$~ Я изменил состояние программы на: " + state.toString());
+                            System.out.println("Демон$~ Я изменил состояние программы на: " + state + ".");
                         }
                         mutex.notify();
                     }
@@ -40,13 +42,12 @@ public class Process {
         }
 
         private void someWork() {
-            int a = 0;
-            a++;
+            int amogus = 0;
+            amogus++;
         }
     }
 
     static class Supervisor implements Runnable {
-
         @Override
         public void run() {
             System.out.println("Супервизор$~ я встал!");
@@ -60,8 +61,8 @@ public class Process {
                     }
                     switch (state) {
                         case FATAL_ERROR -> stopProgram();
-                        case UNKNOWN, STOPPING -> runProgram();
-                        default -> System.out.println("Супервизор$~ Я ничего не сделал)");
+                        case STOPPING -> runProgram();
+                        default -> System.out.println("Супервизор$~ Я ничего не сделал.");
                     }
                 }
             }
@@ -69,12 +70,12 @@ public class Process {
 
         private void runProgram() {
             state = State.RUNNING;
-            System.out.println("Супервизор$~ Я перезапустил программу");
+            System.out.println("Супервизор$~ Я перезапустил программу.");
         }
 
         private void stopProgram() {
             abstractProgram.interrupt();
-            System.out.println("Супервизор$~ Я остановил программу");
+            System.out.println("Супервизор$~ Я остановил программу.");
         }
     }
 
